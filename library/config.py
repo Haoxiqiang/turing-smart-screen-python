@@ -44,13 +44,15 @@ THEME_DATA = None
 def copy_default(default, theme):
     """recursively supply default values into a dict of dicts of dicts ...."""
     # Create a list of keys to avoid "dictionary changed size during iteration" error
-    keys = list(default.keys())
-    for k in keys:
-        v = default[k]
+    for k, v in default.items():
         if k not in theme:
             theme[k] = v
-        if isinstance(v, dict):
+        # Make sure both values are dictionaries before recursive call
+        elif isinstance(v, dict) and isinstance(theme[k], dict):
             copy_default(default[k], theme[k])
+        # If the default value is a dict but the theme value is not, replace it
+        elif isinstance(v, dict) and not isinstance(theme[k], dict):
+            theme[k] = v
 
 
 def load_theme():

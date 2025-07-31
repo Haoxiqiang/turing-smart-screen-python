@@ -172,6 +172,115 @@ class Cpu(sensors.Cpu):
 
         return math.nan
 
+    @staticmethod
+    def power(interval: float) -> float:
+        # CPU power is not directly available through psutil
+        # We can estimate it based on CPU usage and some platform-specific formulas
+        try:
+            # Get CPU usage percentage
+            cpu_percent = psutil.cpu_percent(interval=interval)
+            
+            # A very rough estimation - in reality, CPU power consumption depends on many factors
+            # This is just a simple estimation that returns a value based on CPU usage
+            # Real implementation would require platform-specific code or external libraries
+            # For a more accurate implementation, we would need to use specific hardware interfaces
+            # or external tools like 'powermetrics' on macOS or '/sys/class/powercap' on Linux
+            
+            # Simple estimation: base power + usage-based power
+            # Assume base power of 5W and up to 80W additional power at 100% usage
+            base_power = 5.0
+            max_additional_power = 80.0
+            estimated_power = base_power + (cpu_percent / 100.0) * max_additional_power
+            
+            return estimated_power
+        except:
+            return math.nan
+
+    @staticmethod
+    def voltage(interval: float) -> float:
+        # CPU voltage is not typically exposed through standard system APIs
+        # It would require specific hardware interfaces or external tools
+        try:
+            # Try to get voltage from sensors
+            sensors_temps = psutil.sensors_temperatures()
+            
+            # Some systems might expose voltage through sensors
+            # This is system and hardware dependent
+            try:
+                # Check if we have sensors_misc available
+                sensors_misc = None
+                try:
+                    sensors_misc = psutil.sensors_fans()  # This is just to test if sensors are available
+                except:
+                    pass
+                    
+                # Try to get voltage information from sensors
+                if hasattr(psutil, 'sensors_temperatures'):
+                    voltage_sensors = psutil.sensors_temperatures()
+                    # Look for common voltage sensor names
+                    for sensor_name, sensor_list in voltage_sensors.items():
+                        # Common voltage sensor prefixes
+                        if any(prefix in sensor_name.lower() for prefix in ['cpu', 'core', 'vcpu', 'vid']):
+                            for sensor in sensor_list:
+                                # Look for voltage-related labels
+                                if sensor.current is not None and any(
+                                    keyword in sensor.label.lower() for keyword in 
+                                    ['vcore', 'cpu', 'core', 'vid', 'vtt']
+                                ):
+                                    # Convert to volts if needed (some sensors report in millivolts)
+                                    voltage_value = sensor.current
+                                    if voltage_value > 50:  # Probably in millivolts
+                                        voltage_value /= 1000.0
+                                    return voltage_value
+                                    
+                # Try to get voltage from /sys/class/hwmon on Linux
+                if hasattr(os, 'listdir') and os.path.exists('/sys/class/hwmon'):
+                    try:
+                        # Look for CPU voltage sensors in hwmon
+                        for hwmon_dir in os.listdir('/sys/class/hwmon'):
+                            name_file = f'/sys/class/hwmon/{hwmon_dir}/name'
+                            if os.path.exists(name_file):
+                                with open(name_file, 'r') as f:
+                                    name = f.read().strip().lower()
+                                    # Check if this is a CPU-related sensor
+                                    if any(cpu_name in name for cpu_name in ['cpu', 'core', 'k10', 'coretemp']):
+                                        # Look for voltage input files
+                                        for file in os.listdir(f'/sys/class/hwmon/{hwmon_dir}'):
+                                            if 'in' in file and 'input' in file:
+                                                # Try to identify CPU voltage files
+                                                label_file = f'/sys/class/hwmon/{hwmon_dir}/{file.replace("input", "label")}'
+                                                if os.path.exists(label_file):
+                                                    with open(label_file, 'r') as lf:
+                                                        label = lf.read().strip().lower()
+                                                        if any(vlabel in label for vlabel in ['cpu', 'core', 'vcore', 'vid']):
+                                                            # Read the voltage value
+                                                            with open(f'/sys/class/hwmon/{hwmon_dir}/{file}', 'r') as vf:
+                                                                voltage_value = int(vf.read().strip())
+                                                                # Convert from millivolts to volts
+                                                                return voltage_value / 1000.0
+                                    elif any(v_name in name for v_name in ['it87', 'nct', 'w83', 'f71', 'f75', 'f82']):
+                                        # Common voltage sensor chips
+                                        for file in os.listdir(f'/sys/class/hwmon/{hwmon_dir}'):
+                                            if 'in' in file and 'input' in file:
+                                                label_file = f'/sys/class/hwmon/{hwmon_dir}/{file.replace("input", "label")}'
+                                                if os.path.exists(label_file):
+                                                    with open(label_file, 'r') as lf:
+                                                        label = lf.read().strip().lower()
+                                                        if any(vlabel in label for vlabel in ['cpu', 'core', 'vcore', 'vid']):
+                                                            with open(f'/sys/class/hwmon/{hwmon_dir}/{file}', 'r') as vf:
+                                                                voltage_value = int(vf.read().strip())
+                                                                return voltage_value / 1000.0
+                    except:
+                        pass
+                        
+            except:
+                pass
+                
+            # If we can't get voltage information, return NaN
+            return math.nan
+        except:
+            return math.nan
+
 
 class Gpu(sensors.Gpu):
     @staticmethod

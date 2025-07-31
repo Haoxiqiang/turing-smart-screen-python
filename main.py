@@ -93,7 +93,10 @@ if __name__ == "__main__":
 
     def clean_stop(tray_icon=None):
         # Turn screen and LEDs off before stopping
-        display.turn_off()
+        try:
+            display.turn_off()
+        except:
+            pass
 
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
@@ -104,7 +107,11 @@ if __name__ == "__main__":
 
         # Remove tray icon just before exit
         if tray_icon:
-            tray_icon.visible = False
+            try:
+                tray_icon.visible = False
+                tray_icon.stop()
+            except:
+                pass
 
         # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
@@ -221,6 +228,8 @@ if __name__ == "__main__":
     scheduler.CPUFrequency(); time.sleep(0.25)
     scheduler.CPULoad(); time.sleep(0.25)
     scheduler.CPUTemperature(); time.sleep(0.25)
+    scheduler.CPUPower(); time.sleep(0.25)
+    scheduler.CPUVoltage(); time.sleep(0.25)
     scheduler.CPUFanSpeed(); time.sleep(0.25)
     if stats.Gpu.is_available():
         scheduler.GpuStats(); time.sleep(0.25)

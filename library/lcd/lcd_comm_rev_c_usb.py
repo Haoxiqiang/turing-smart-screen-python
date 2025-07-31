@@ -49,17 +49,38 @@ def find_usb_device():
     if dev is None:
         raise ValueError('USB device not found')
 
-    try:
-        dev.set_configuration()
-    except usb.core.USBError as e:
-        print("Warning: set_configuration() failed:", e)
+    # Add retry mechanism for device configuration
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            dev.set_configuration()
+            break  # Success, exit retry loop
+        except usb.core.USBError as e:
+            if e.errno == 16:  # Resource busy
+                logger.warning(f"USB set_configuration failed (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:  # Not the last attempt
+                    time.sleep(0.2 * (attempt + 1))  # Exponential backoff
+                    continue
+            print("Warning: set_configuration() failed:", e)
+        except Exception as e:
+            print("Warning: set_configuration() failed:", e)
 
     if platform.system() == "Linux":
-        try:
-            if dev.is_kernel_driver_active(0):
-                dev.detach_kernel_driver(0)
-        except usb.core.USBError as e:
-            print("Warning: detach_kernel_driver failed:", e)
+        # Add retry mechanism for kernel driver detachment
+        for attempt in range(max_retries):
+            try:
+                if dev.is_kernel_driver_active(0):
+                    dev.detach_kernel_driver(0)
+                break  # Success, exit retry loop
+            except usb.core.USBError as e:
+                if e.errno == 16:  # Resource busy
+                    logger.warning(f"USB detach_kernel_driver failed (attempt {attempt + 1}/{max_retries}): {e}")
+                    if attempt < max_retries - 1:  # Not the last attempt
+                        time.sleep(0.2 * (attempt + 1))  # Exponential backoff
+                        continue
+                print("Warning: detach_kernel_driver failed:", e)
+            except Exception as e:
+                print("Warning: detach_kernel_driver failed:", e)
 
     return dev
 
@@ -86,19 +107,41 @@ def write_to_device(dev, data, timeout=2000):
     ep_in = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
     assert ep_out is not None and ep_in is not None, "Could not find USB endpoints"
     
-    try:
-        ep_out.write(data, timeout)
-    except usb.core.USBError as e:
-        print("USB write error:", e)
-        return None
+    # Add retry mechanism for USB write operations
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            ep_out.write(data, timeout)
+            break  # Success, exit retry loop
+        except usb.core.USBError as e:
+            if e.errno == 16:  # Resource busy
+                logger.warning(f"USB write error (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:  # Not the last attempt
+                    time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+                    continue
+            print("USB write error:", e)
+            return None
+        except Exception as e:
+            print("USB write error:", e)
+            return None
     
-    try:
-        response = ep_in.read(512, timeout)
-        read_flush(ep_in)
-        return bytes(response)
-    except usb.core.USBError as e:
-        print("USB read error:", e)
-        return None
+    # Add retry mechanism for USB read operations
+    for attempt in range(max_retries):
+        try:
+            response = ep_in.read(512, timeout)
+            read_flush(ep_in)
+            return bytes(response)
+        except usb.core.USBError as e:
+            if e.errno == 16:  # Resource busy
+                logger.warning(f"USB read error (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:  # Not the last attempt
+                    time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+                    continue
+            print("USB read error:", e)
+            return None
+        except Exception as e:
+            print("USB read error:", e)
+            return None
 
 def delay_sync(dev):
     send_sync_command(dev)

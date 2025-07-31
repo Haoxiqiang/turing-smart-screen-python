@@ -136,6 +136,25 @@ def display_themed_temperature_value(theme_data, value):
     )
 
 
+def display_themed_text_elements(theme_data, display_func, value):
+    """
+    Display themed text elements, supporting both single and multiple configurations.
+    
+    Args:
+        theme_data: Either a dict (single element) or list of dicts (multiple elements)
+        display_func: Function to call for displaying each element
+        value: Value to display
+    """
+    if isinstance(theme_data, list):
+        # Handle multiple text elements
+        for element in theme_data:
+            if isinstance(element, dict) and element.get("SHOW", False):
+                display_func(element, value)
+    elif isinstance(theme_data, dict) and theme_data.get("SHOW", False):
+        # Handle single text element
+        display_func(theme_data, value)
+
+
 def display_themed_progress_bar(theme_data, value):
     if not theme_data.get("SHOW", False):
         return
@@ -372,6 +391,84 @@ class CPU:
         display_themed_percent_radial_bar(cpu_fan_radial_data, fan_percent)
         display_themed_line_graph(cpu_fan_line_graph_data, cls.last_values_cpu_fan_speed)
 
+    @classmethod
+    def power(cls):
+        power = sensors.Cpu.power(
+            interval=config.THEME_DATA['STATS']['CPU']['POWER'].get("INTERVAL", None)
+        )
+        save_last_value(power, cls.last_values_cpu_power,
+                        config.THEME_DATA['STATS']['CPU']['POWER']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                     DEFAULT_HISTORY_SIZE))
+
+        cpu_power_text_data = config.THEME_DATA['STATS']['CPU']['POWER']['TEXT']
+        cpu_power_radial_data = config.THEME_DATA['STATS']['CPU']['POWER']['RADIAL']
+        cpu_power_graph_data = config.THEME_DATA['STATS']['CPU']['POWER']['GRAPH']
+        cpu_power_line_graph_data = config.THEME_DATA['STATS']['CPU']['POWER']['LINE_GRAPH']
+
+        if math.isnan(power):
+            power = 0
+            if cpu_power_text_data['SHOW'] or cpu_power_radial_data['SHOW'] or cpu_power_graph_data[
+                'SHOW'] or cpu_power_line_graph_data['SHOW']:
+                logger.warning("Your CPU power is not supported yet")
+                cpu_power_text_data['SHOW'] = False
+                cpu_power_radial_data['SHOW'] = False
+                cpu_power_graph_data['SHOW'] = False
+                cpu_power_line_graph_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=cpu_power_text_data,
+            value=f'{power:.2f}',
+            unit=" W",
+            min_size=4
+        )
+        display_themed_progress_bar(cpu_power_graph_data, power)
+        display_themed_radial_bar(
+            theme_data=cpu_power_radial_data,
+            value=f'{power:.2f}',
+            unit=" W",
+            min_size=4
+        )
+        display_themed_line_graph(cpu_power_line_graph_data, cls.last_values_cpu_power)
+
+    @classmethod
+    def voltage(cls):
+        voltage = sensors.Cpu.voltage(
+            interval=config.THEME_DATA['STATS']['CPU']['VOLTAGE'].get("INTERVAL", None)
+        )
+        save_last_value(voltage, cls.last_values_cpu_voltage,
+                        config.THEME_DATA['STATS']['CPU']['VOLTAGE']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                       DEFAULT_HISTORY_SIZE))
+
+        cpu_voltage_text_data = config.THEME_DATA['STATS']['CPU']['VOLTAGE']['TEXT']
+        cpu_voltage_radial_data = config.THEME_DATA['STATS']['CPU']['VOLTAGE']['RADIAL']
+        cpu_voltage_graph_data = config.THEME_DATA['STATS']['CPU']['VOLTAGE']['GRAPH']
+        cpu_voltage_line_graph_data = config.THEME_DATA['STATS']['CPU']['VOLTAGE']['LINE_GRAPH']
+
+        if math.isnan(voltage):
+            voltage = 0
+            if cpu_voltage_text_data['SHOW'] or cpu_voltage_radial_data['SHOW'] or cpu_voltage_graph_data[
+                'SHOW'] or cpu_voltage_line_graph_data['SHOW']:
+                logger.warning("Your CPU voltage is not supported yet")
+                cpu_voltage_text_data['SHOW'] = False
+                cpu_voltage_radial_data['SHOW'] = False
+                cpu_voltage_graph_data['SHOW'] = False
+                cpu_voltage_line_graph_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=cpu_voltage_text_data,
+            value=f'{voltage:.2f}',
+            unit=" V",
+            min_size=4
+        )
+        display_themed_progress_bar(cpu_voltage_graph_data, voltage)
+        display_themed_radial_bar(
+            theme_data=cpu_voltage_radial_data,
+            value=f'{voltage:.2f}',
+            unit=" V",
+            min_size=4
+        )
+        display_themed_line_graph(cpu_voltage_line_graph_data, cls.last_values_cpu_voltage)
+
 
 class Gpu:
     last_values_gpu_percentage = []
@@ -514,17 +611,26 @@ class Gpu:
         gpu_temp_graph_data = theme_gpu_data['TEMPERATURE']['GRAPH']
         gpu_temp_line_graph_data = theme_gpu_data['TEMPERATURE']['LINE_GRAPH']
 
+        # Check if any text elements are shown for error handling
+        temp_texts_shown = False
+        if isinstance(gpu_temp_text_data, list):
+            for element in gpu_temp_text_data:
+                if isinstance(element, dict) and element.get("SHOW", False):
+                    temp_texts_shown = True
+                    break
+        else:
+            temp_texts_shown = isinstance(gpu_temp_text_data, dict) and gpu_temp_text_data.get("SHOW", False)
+
         if math.isnan(temperature):
             temperature = 0
-            if gpu_temp_text_data['SHOW'] or gpu_temp_radial_data['SHOW'] or gpu_temp_graph_data[
+            if temp_texts_shown or gpu_temp_radial_data['SHOW'] or gpu_temp_graph_data[
                 'SHOW'] or gpu_temp_line_graph_data['SHOW']:
                 logger.warning("Your GPU temperature is not supported yet")
-                gpu_temp_text_data['SHOW'] = False
                 gpu_temp_radial_data['SHOW'] = False
                 gpu_temp_graph_data['SHOW'] = False
                 gpu_temp_line_graph_data['SHOW'] = False
 
-        display_themed_temperature_value(gpu_temp_text_data, temperature)
+        display_themed_text_elements(gpu_temp_text_data, display_themed_temperature_value, temperature)
         display_themed_progress_bar(gpu_temp_graph_data, temperature)
         display_themed_temperature_radial_bar(gpu_temp_radial_data, temperature)
         display_themed_line_graph(gpu_temp_line_graph_data, cls.last_values_gpu_temperature)
@@ -889,11 +995,27 @@ class Weather:
         WEATHER_UNITS = {'metric': '°C', 'imperial': '°F', 'standard': '°K'}
 
         weather_theme_data = config.THEME_DATA['STATS'].get('WEATHER', {})
+        # Ensure we're working with a dict, not a list
+        if not isinstance(weather_theme_data, dict):
+            weather_theme_data = {}
+            
         wtemperature_theme_data = weather_theme_data.get('TEMPERATURE', {}).get('TEXT', {})
         wfelt_theme_data = weather_theme_data.get('TEMPERATURE_FELT', {}).get('TEXT', {})
         wupdatetime_theme_data = weather_theme_data.get('UPDATE_TIME', {}).get('TEXT', {})
         wdescription_theme_data = weather_theme_data.get('WEATHER_DESCRIPTION', {}).get('TEXT', {})
         whumidity_theme_data = weather_theme_data.get('HUMIDITY', {}).get('TEXT', {})
+
+        # Ensure all theme data objects are dicts
+        if not isinstance(wtemperature_theme_data, dict):
+            wtemperature_theme_data = {}
+        if not isinstance(wfelt_theme_data, dict):
+            wfelt_theme_data = {}
+        if not isinstance(wupdatetime_theme_data, dict):
+            wupdatetime_theme_data = {}
+        if not isinstance(wdescription_theme_data, dict):
+            wdescription_theme_data = {}
+        if not isinstance(whumidity_theme_data, dict):
+            whumidity_theme_data = {}
 
         activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get(
             "SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get(
@@ -904,7 +1026,7 @@ class Weather:
             feel = None
             time = None
             humidity = None
-            if HW_SENSORS in ["STATIC", "STUB"]:
+            if config.HW_SENSORS in ["STATIC", "STUB"]:
                 temp = "17.5°C"
                 feel = "(17.2°C)"
                 desc = "Cloudy"
@@ -936,13 +1058,13 @@ class Weather:
                             # logger.error(response.text)
                             desc = response.json().get('message')
                     except Exception as e:
+                        temp = "36"
                         logger.error(f"Error fetching OpenWeatherMap API: {str(e)}")
                         desc = "Error fetching OpenWeatherMap API"
                 else:
                     logger.warning("No OpenWeatherMap API key provided in config.yaml")
                     desc = "No OpenWeatherMap API key"
 
-        if activate:
             # Display Temperature
             display_themed_value(theme_data=wtemperature_theme_data, value=temp)
             # Display Temperature Felt

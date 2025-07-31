@@ -46,13 +46,25 @@ class Cpu(sensors.Cpu):
     def fan_percent(fan_name: str = None) -> float:
         return random.uniform(0, 100)
 
+    @staticmethod
+    def power(interval: float) -> float:
+        # Return random power between 10W and 150W
+        return random.uniform(10, 150)
+
+    @staticmethod
+    def voltage(interval: float) -> float:
+        # Return random voltage between 0.8V and 1.5V
+        return random.uniform(0.8, 1.5)
+
 
 class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
         float, float, float, float, float, float, float]:
         # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
-        return random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000),16000.0, random.uniform(30, 90), random.uniform(0, 500), random.uniform(0, 100)  
+        return random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), 16000.0, random.uniform(30,
+                                                                                                                   90), random.uniform(
+            0, 500), random.uniform(0, 5)
 
     @staticmethod
     def fps() -> int:

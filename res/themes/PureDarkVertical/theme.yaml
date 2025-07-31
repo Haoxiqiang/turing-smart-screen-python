@@ -162,29 +162,34 @@ STATS:
         BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       TEXT:
-        SHOW: True
-        SHOW_UNIT: True
-        X: 14
-        Y: 1010
-        WIDTH: 120
-        HEIGHT: 44
-        ANCHOR: mm
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 40
-        FONT_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      # TEXT:
-      #   SHOW: True
-      #   SHOW_UNIT: True
-      #   X: 265
-      #   Y: 1845
-      #   WIDTH: 60
-      #   HEIGHT: 20
-      #   ANCHOR: mm
-      #   FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-      #   FONT_SIZE: 12
-      #   FONT_COLOR: 0, 0, 0
-      #   BACKGROUND_IMAGE: background.png
+        - SHOW: True
+          SHOW_UNIT: True
+          X: 14
+          Y: 1010
+          WIDTH: 120
+          HEIGHT: 44
+          ANCHOR: mm
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 40
+          FONT_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+        - SHOW: True
+          SHOW_UNIT: True
+          X: 265
+          Y: 1845
+          WIDTH: 60
+          HEIGHT: 20
+          ANCHOR: mm
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FREQUENCY:
       TEXT:
         SHOW: True

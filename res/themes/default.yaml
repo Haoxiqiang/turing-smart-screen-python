@@ -54,12 +54,14 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     POWER:
+      INTERVAL: 0
       TEXT:
         SHOW: False
         SHOW_UNIT: False
       LINE_GRAPH:
         SHOW: False
     VOLTAGE:
+      INTERVAL: 0
       TEXT:
         SHOW: False
         SHOW_UNIT: False
@@ -244,7 +246,21 @@ STATS:
   WEATHER:
     INTERVAL: 0
     TEMPERATURE:
+      # TEXT can be either a single element or a list of elements
+      # Single element format:
+      # TEXT:
+      #   SHOW: False
+      # Multiple elements format:
+      # TEXT:
+      #   - SHOW: False
+      #   - SHOW: False
       TEXT:
+        - SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
     TEMPERATURE_FELT:
       TEXT:

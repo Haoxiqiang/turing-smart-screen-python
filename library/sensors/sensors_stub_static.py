@@ -23,13 +23,14 @@
 from typing import Tuple
 
 import library.sensors.sensors as sensors
-
 # Define here global static values that will be applied to all sensors of the same type
 PERCENTAGE_SENSOR_VALUE = 50.0
 TEMPERATURE_SENSOR_VALUE = 67.3
 
 # Define other sensors
 CPU_FREQ_MHZ = 2400.0
+CPU_POWER = 65.0
+CPU_VOLTAGE = 1.2
 DISK_TOTAL_SIZE_GB = 1000
 MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
@@ -60,6 +61,14 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def fan_percent(fan_name: str = None) -> float:
         return PERCENTAGE_SENSOR_VALUE
+
+    @staticmethod
+    def power(interval: float) -> float:
+        return CPU_POWER
+
+    @staticmethod
+    def voltage(interval: float) -> float:
+        return CPU_VOLTAGE
 
 
 class Gpu(sensors.Gpu):
@@ -103,11 +112,11 @@ class Memory(sensors.Memory):
 
     @staticmethod
     def virtual_used() -> int:  # In bytes
-        return int(MEMORY_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE) * 1000000000
+        return MEMORY_TOTAL_SIZE_GB * 1024 * 1024 * 1024 / 100 * PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def virtual_free() -> int:  # In bytes
-        return int(MEMORY_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
+        return MEMORY_TOTAL_SIZE_GB * 1024 * 1024 * 1024 / 100 * (100 - PERCENTAGE_SENSOR_VALUE)
 
 
 class Disk(sensors.Disk):
@@ -117,11 +126,11 @@ class Disk(sensors.Disk):
 
     @staticmethod
     def disk_used() -> int:  # In bytes
-        return int(DISK_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE) * 1000000000
+        return int(DISK_TOTAL_SIZE_GB * 1024 * 1024 * 1024 / 100 * PERCENTAGE_SENSOR_VALUE)
 
     @staticmethod
     def disk_free() -> int:  # In bytes
-        return int(DISK_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
+        return int(DISK_TOTAL_SIZE_GB * 1024 * 1024 * 1024 / 100 * (100 - PERCENTAGE_SENSOR_VALUE))
 
 
 class Net(sensors.Net):
