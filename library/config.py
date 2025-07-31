@@ -43,10 +43,13 @@ THEME_DATA = None
 
 def copy_default(default, theme):
     """recursively supply default values into a dict of dicts of dicts ...."""
-    for k, v in default.items():
+    # Create a list of keys to avoid "dictionary changed size during iteration" error
+    keys = list(default.keys())
+    for k in keys:
+        v = default[k]
         if k not in theme:
             theme[k] = v
-        if type(v) == type({}):
+        if isinstance(v, dict):
             copy_default(default[k], theme[k])
 
 
@@ -55,10 +58,21 @@ def load_theme():
     try:
         theme_path = Path("res/themes/" + CONFIG_DATA['config']['THEME'])
         logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path / "theme.yaml"))
-        THEME_DATA = load_yaml(MAIN_DIRECTORY / theme_path / "theme.yaml")
+        theme_file_path = MAIN_DIRECTORY / theme_path / "theme.yaml"
+        if not theme_file_path.exists():
+            logger.error(f"Theme file not found: {theme_file_path}")
+            raise FileNotFoundError(f"Theme file not found: {theme_file_path}")
+            
+        THEME_DATA = load_yaml(theme_file_path)
         THEME_DATA['PATH'] = str(MAIN_DIRECTORY / theme_path) + "/"
-    except:
-        logger.error("Theme not found or contains errors!")
+    except FileNotFoundError as e:
+        logger.error(f"Theme not found: {str(e)}")
+        try:
+            sys.exit(0)
+        except:
+            os._exit(0)
+    except Exception as e:
+        logger.error(f"Error loading theme: {str(e)}")
         try:
             sys.exit(0)
         except:
@@ -69,7 +83,8 @@ def load_theme():
 
 def check_theme_compatible(display_size: str):
     # Check if theme is compatible with hardware revision
-    if display_size != THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
+    theme_display_size = THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"')
+    if display_size != theme_display_size:
         logger.error("The selected theme " + CONFIG_DATA['config'][
             'THEME'] + " is not compatible with your display revision " + CONFIG_DATA["display"]["REVISION"])
         try:

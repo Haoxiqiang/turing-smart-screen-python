@@ -56,23 +56,32 @@ def schedule(interval):
 
         def periodic(scheduler, periodic_interval, action, actionargs=()):
             """ Wrap the scheduler with our periodic interval """
+            # Check if the program is stopping
             if not STOPPING:
                 # If the program is not stopping: re-schedule the task for future execution
                 scheduler.enter(periodic_interval, 1, periodic,
                                 (scheduler, periodic_interval, action, actionargs))
-            action(*actionargs)
+            
+            # Execute the action regardless of whether we're stopping or not
+            try:
+                action(*actionargs)
+            except Exception as e:
+                # Log the exception but don't stop the scheduler
+                import logging
+                logging.exception("Exception in scheduled task: %s", str(e))
 
         @wraps(func)
-        def wrap(
-                *args,
-                **kwargs
-        ):
+        def wrap(*args, **kwargs):
             """ Wrapper to create our schedule and run it at the appropriate time """
             if interval == 0:
                 return
-            scheduler = sched.scheduler(time.time, time.sleep)
-            periodic(scheduler, interval, func)
-            scheduler.run()
+            
+            try:
+                scheduler = sched.scheduler(time.time, time.sleep)
+                periodic(scheduler, interval, func)
+                scheduler.run()
+            except Exception as e:
+                print(e)
 
         return wrap
 
@@ -190,13 +199,22 @@ def QueueHandler():
     if STOPPING:
         # Empty the action queue to allow program to exit cleanly
         while not config.update_queue.empty():
-            f, args = config.update_queue.get()
-            f(*args)
+            try:
+                f, args = config.update_queue.get(block=False)
+                if f:
+                    f(*args)
+            except:
+                # Queue is empty or other error, continue
+                break
     else:
         # Execute first action in the queue
-        f, args = config.update_queue.get()
-        if f:
-            f(*args)
+        try:
+            f, args = config.update_queue.get(block=False)
+            if f:
+                f(*args)
+        except:
+            # Queue is empty, no action to execute
+            pass
 
 
 def is_queue_empty() -> bool:

@@ -9,7 +9,7 @@ config:
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
-  THEME: Cyberpunk 2077 Vertical
+  THEME: PureDarkVertical
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:

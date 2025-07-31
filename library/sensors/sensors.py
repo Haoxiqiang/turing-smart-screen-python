@@ -49,12 +49,22 @@ class Cpu(ABC):
     def fan_percent(fan_name: str = None) -> float:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def power(interval: float) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def voltage(interval: float) -> float:
+        pass
 
 class Gpu(ABC):
     @staticmethod
     @abstractmethod
     def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
         pass
 
     @staticmethod

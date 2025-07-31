@@ -323,9 +323,11 @@ class LcdCommRevCUSB(LcdComm):
             image = image.crop((0, 0, image_width, image_height))
 
         self.image_parts[(x, y)] = image
-        base_image = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
-
-        for (x, y), part in self.image_parts.items():
+        # base_image = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
+        base_image = Image.new("RGBA", (self.get_width(), self.get_height()), color="white")
+        # Create a list of items to avoid "dictionary changed size during iteration" error
+        image_parts_items = list(self.image_parts.items())
+        for (x, y), part in image_parts_items:
             mask = part
             if mask is not None:
                 if mask.mode not in ('L', 'RGBA'):
@@ -339,12 +341,11 @@ class LcdCommRevCUSB(LcdComm):
         elif self.orientation == Orientation.REVERSE_LANDSCAPE:
             base_image = base_image.transpose(Image.ROTATE_90)
         elif self.orientation == Orientation.PORTRAIT:
-            base_image = base_image.transpose(Image.ROTATE_180)
-        elif self.orientation == Orientation.REVERSE_PORTRAIT:
+            # Already in portrait mode
             pass
 
-        buffer = BytesIO()
-        base_image.save(buffer, format="PNG")
-        png_data = buffer.getvalue()
-
+        # Save the image to a BytesIO object
+        buffered = BytesIO()
+        base_image.save(buffered, format="PNG")
+        png_data = buffered.getvalue()
         send_image(self.dev, png_data)

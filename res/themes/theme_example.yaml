@@ -427,6 +427,70 @@ STATS:
         AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+    POWER:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 100
+        Y: 20
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 10
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    VOLTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 100
+        Y: 20
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 10
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
   GPU:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
@@ -873,6 +937,70 @@ STATS:
         FONT_COLOR: 200, 200, 200
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 10
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    POWER:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 100
+        Y: 20
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 10
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    VOLTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 100
+        Y: 20
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
       LINE_GRAPH:
         SHOW: False
         X: 300

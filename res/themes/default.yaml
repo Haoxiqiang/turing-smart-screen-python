@@ -53,6 +53,18 @@ STATS:
         SHOW: False
       LINE_GRAPH:
         SHOW: False
+    POWER:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      LINE_GRAPH:
+        SHOW: False
+    VOLTAGE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      LINE_GRAPH:
+        SHOW: False
   GPU:
     INTERVAL: 0
     PERCENTAGE:
@@ -120,6 +132,18 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    POWER:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      LINE_GRAPH:
+        SHOW: False
+    VOLTAGE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
       LINE_GRAPH:
         SHOW: False
   MEMORY:

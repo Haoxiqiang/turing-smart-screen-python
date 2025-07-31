@@ -36,6 +36,8 @@ GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
 GPU_FPS = 120
 GPU_FREQ_MHZ = 1500.0
+GPU_POWER = 350.0
+GPU_VOLTAGE = 1.25
 
 
 class Cpu(sensors.Cpu):
@@ -63,12 +65,15 @@ class Cpu(sensors.Cpu):
 class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
         return (PERCENTAGE_SENSOR_VALUE,
                 PERCENTAGE_SENSOR_VALUE,
                 GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1024,
                 GPU_MEM_TOTAL_SIZE_GB * 1024,
-                TEMPERATURE_SENSOR_VALUE)
+                TEMPERATURE_SENSOR_VALUE,
+                GPU_POWER,
+                GPU_VOLTAGE)
 
     @staticmethod
     def fps() -> int:

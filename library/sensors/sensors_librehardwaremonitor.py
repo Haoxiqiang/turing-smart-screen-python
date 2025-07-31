@@ -275,7 +275,8 @@ class Gpu(sensors.Gpu):
 
     @classmethod
     def stats(cls) -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         gpu_to_use = cls.get_gpu_to_use()
         if gpu_to_use is None:
             # GPU not supported

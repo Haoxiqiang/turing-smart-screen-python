@@ -157,7 +157,9 @@ class Cpu(sensors.Cpu):
         try:
             fans = sensors_fans()
             if fans:
-                for name, entries in fans.items():
+                # Convert to list to avoid "dictionary changed size during iteration" error
+                fan_items = list(fans.items())
+                for name, entries in fan_items:
                     for entry in entries:
                         if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
                             # Manually selected fan
@@ -174,13 +176,14 @@ class Cpu(sensors.Cpu):
 class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.stats()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.stats()
         else:
-            return math.nan, math.nan, math.nan, math.nan, math.nan
+            return math.nan, math.nan, math.nan, math.nan, math.nan, math.nan, math.nan
 
     @staticmethod
     def fps() -> int:
@@ -233,7 +236,8 @@ class Gpu(sensors.Gpu):
 class GpuNvidia(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -266,7 +270,7 @@ class GpuNvidia(sensors.Gpu):
         except:
             temperature = math.nan
 
-        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature
+        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature, math.nan, math.nan
 
     @staticmethod
     def fps() -> int:
@@ -278,7 +282,9 @@ class GpuNvidia(sensors.Gpu):
         try:
             fans = sensors_fans()
             if fans:
-                for name, entries in fans.items():
+                # Convert to list to avoid "dictionary changed size during iteration" error
+                fan_items = list(fans.items())
+                for name, entries in fan_items:
                     for entry in entries:
                         if "gpu" in (entry.label.lower() or name.lower()):
                             return entry.percent
@@ -303,7 +309,8 @@ class GpuNvidia(sensors.Gpu):
 class GpuAmd(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        float, float, float, float, float, float, float]:
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             pyamdgpuinfo.detect_gpus()
@@ -338,7 +345,17 @@ class GpuAmd(sensors.Gpu):
             except:
                 temperature = math.nan
 
-            return load, memory_percentage, memory_used, memory_total, temperature
+            try:
+                graphics_power = amd_gpu.query_power()
+            except:
+                graphics_power = math.nan
+
+            try:
+                graphics_voltage = amd_gpu.query_graphics_voltage()
+            except:
+                graphics_voltage = math.nan
+
+            return load, memory_percentage, memory_used, memory_total, temperature, graphics_power, graphics_voltage
         elif pyadl:
             amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
 
@@ -353,7 +370,7 @@ class GpuAmd(sensors.Gpu):
                 temperature = math.nan
 
             # GPU memory data not supported by pyadl
-            return load, math.nan, math.nan, math.nan, temperature
+            return load, math.nan, math.nan, math.nan, temperature, math.nan, math.nan
 
     @staticmethod
     def fps() -> int:
@@ -366,7 +383,9 @@ class GpuAmd(sensors.Gpu):
             # Try with psutil fans
             fans = sensors_fans()
             if fans:
-                for name, entries in fans.items():
+                # Convert to list to avoid "dictionary changed size during iteration" error
+                fan_items = list(fans.items())
+                for name, entries in fan_items:
                     for entry in entries:
                         if "gpu" in (entry.label.lower() or name.lower()):
                             return entry.percent

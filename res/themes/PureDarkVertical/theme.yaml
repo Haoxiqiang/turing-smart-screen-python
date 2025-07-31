@@ -1,0 +1,284 @@
+---
+author: "@haoxiqiang"
+
+display:
+  DISPLAY_SIZE: 8.8" # 480 x 1920
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 255, 239, 47
+
+
+static_images:
+  BACKGROUND:
+    PATH: mask.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 1920
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 6
+        Y: 160
+        WIDTH: 180
+        HEIGHT: 90
+        ANCHOR: mm # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 48
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 150
+        WIDTH: 1
+        HEIGHT: 1
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: True
+        X: 40
+        Y: 565
+        WIDTH: 400
+        HEIGHT: 60
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        LINE_COLOR: 255, 55, 80
+        LINE_WIDTH: 4
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 12
+        Y: 404
+        WIDTH: 128
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMonoNL-Bold.ttf
+        FONT_SIZE: 36
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      # TEXT:
+      #   SHOW: True
+      #   SHOW_UNIT: True
+      #   X: 96
+      #   Y: 1845
+      #   WIDTH: 60
+      #   HEIGHT: 20
+      #   ANCHOR: mm
+      #   FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+      #   FONT_SIZE: 12
+      #   FONT_COLOR: 0, 0, 0
+      #   BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: True
+        X: 200
+        Y: 350
+        WIDTH: 250
+        HEIGHT: 80
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 16
+        AUTOSCALE: True
+        LINE_COLOR: 255, 55, 80
+        LINE_WIDTH: 2
+        AXIS: FALSE
+        BACKGROUND_COLOR: 255, 255, 255
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 250
+        Y: 300
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMonoNL-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 300
+        Y: 215
+        FONT: jetbrains-mono/JetBrainsMonoNL-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ANCHOR: mm
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 0
+        Y: 760
+        WIDTH: 150
+        HEIGHT: 90
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 14
+        Y: 1010
+        WIDTH: 120
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      # TEXT:
+      #   SHOW: True
+      #   SHOW_UNIT: True
+      #   X: 265
+      #   Y: 1845
+      #   WIDTH: 60
+      #   HEIGHT: 20
+      #   ANCHOR: mm
+      #   FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+      #   FONT_SIZE: 12
+      #   FONT_COLOR: 0, 0, 0
+      #   BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 244
+        Y: 915
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    MEMORY:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 244
+        Y: 816
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 244
+        Y: 1010
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    POWER:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 36
+        Y: 522
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 24
+        Y: 1410
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 28
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 28
+        Y: 1445
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 28
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023) / custom pattern e.g. "yyyy.MM.dd" (2024.02.20)
+        SHOW: True
+        X: 270
+        Y: 1609
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
+        SHOW: True
+        X: 270
+        Y: 1657
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+
+  DISK:
+    INTERVAL: 10
+    USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 20
+        Y: 1550
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+    TOTAL:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 20
+        Y: 1590
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html

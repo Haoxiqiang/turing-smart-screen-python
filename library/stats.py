@@ -260,6 +260,8 @@ class CPU:
     last_values_cpu_temperature = []
     last_values_cpu_fan_speed = []
     last_values_cpu_frequency = []
+    last_values_cpu_power = []
+    last_values_cpu_voltage = []
 
     @classmethod
     def percentage(cls):
@@ -302,7 +304,7 @@ class CPU:
     @classmethod
     def load(cls):
         cpu_load = sensors.Cpu.load()
-        # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
+        logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
         load_theme_data = config.THEME_DATA['STATS']['CPU']['LOAD']
 
         display_themed_percent_value(load_theme_data['ONE']['TEXT'], cpu_load[0])
@@ -378,10 +380,13 @@ class Gpu:
     last_values_gpu_fps = []
     last_values_gpu_fan_speed = []
     last_values_gpu_frequency = []
+    last_values_gpu_power = []
+    last_values_gpu_voltage = []
 
     @classmethod
     def stats(cls):
-        load, memory_percentage, memory_used_mb, total_memory_mb, temperature = sensors.Gpu.stats()
+        # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) / power (W) / voltage (v)
+        load, memory_percentage, memory_used_mb, total_memory_mb, temperature, power, voltage = sensors.Gpu.stats()
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
         freq_ghz = sensors.Gpu.frequency() / 1000
@@ -400,7 +405,11 @@ class Gpu:
                         theme_gpu_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         save_last_value(freq_ghz, cls.last_values_gpu_frequency,
                         theme_gpu_data['FREQUENCY']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-
+        save_last_value(power, cls.last_values_gpu_power,
+                        theme_gpu_data['POWER']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(voltage, cls.last_values_gpu_voltage,
+                        theme_gpu_data['VOLTAGE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        
         ################################ for backward compatibility only
         gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
         gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
@@ -591,6 +600,30 @@ class Gpu:
             min_size=4
         )
         display_themed_line_graph(gpu_freq_line_graph_data, cls.last_values_gpu_frequency)
+
+        # GPU Power (W)
+        gpu_power_text_data = theme_gpu_data['POWER']['TEXT']
+        gpu_power_line_graph_data = theme_gpu_data['POWER']['LINE_GRAPH']
+        if math.isnan(power):
+            display_themed_value(
+                theme_data=gpu_power_text_data,
+                value=f'{power:.2f}',
+                unit=" W",
+                min_size=4
+            )
+            display_themed_line_graph(gpu_power_line_graph_data, cls.last_values_gpu_power)
+
+        # GPU Voltage (V)
+        gpu_voltage_text_data = theme_gpu_data['VOLTAGE']['TEXT']
+        gpu_voltage_line_graph_data = theme_gpu_data['VOLTAGE']['LINE_GRAPH']
+        if math.isnan(voltage):
+            display_themed_value(
+                theme_data=gpu_voltage_text_data,
+                value=f'{voltage:.2f}',
+                unit=" v",
+                min_size=4
+            )
+            display_themed_line_graph(gpu_voltage_line_graph_data, cls.last_values_gpu_voltage)
 
     @staticmethod
     def is_available():
