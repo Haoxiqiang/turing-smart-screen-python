@@ -270,7 +270,20 @@ class GpuNvidia(sensors.Gpu):
         except:
             temperature = math.nan
 
-        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature, math.nan, math.nan
+        # Try to get power and voltage data (may not be available on all systems)
+        try:
+            power_all = [item.power for item in nvidia_gpus if item.power is not None]
+            power = sum(power_all) / len(power_all) if power_all else math.nan
+        except:
+            power = math.nan
+
+        try:
+            # Voltage is not typically available through GPUtil, set to NaN
+            voltage = math.nan
+        except:
+            voltage = math.nan
+
+        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature, power, voltage
 
     @staticmethod
     def fps() -> int:

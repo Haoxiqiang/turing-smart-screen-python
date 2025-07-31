@@ -604,7 +604,7 @@ class Gpu:
         # GPU Power (W)
         gpu_power_text_data = theme_gpu_data['POWER']['TEXT']
         gpu_power_line_graph_data = theme_gpu_data['POWER']['LINE_GRAPH']
-        if math.isnan(power):
+        if not math.isnan(power):
             display_themed_value(
                 theme_data=gpu_power_text_data,
                 value=f'{power:.2f}',
@@ -612,18 +612,26 @@ class Gpu:
                 min_size=4
             )
             display_themed_line_graph(gpu_power_line_graph_data, cls.last_values_gpu_power)
+        elif gpu_power_text_data['SHOW'] or gpu_power_line_graph_data['SHOW']:
+            logger.warning("Your GPU power is not supported yet")
+            gpu_power_text_data['SHOW'] = False
+            gpu_power_line_graph_data['SHOW'] = False
 
         # GPU Voltage (V)
         gpu_voltage_text_data = theme_gpu_data['VOLTAGE']['TEXT']
         gpu_voltage_line_graph_data = theme_gpu_data['VOLTAGE']['LINE_GRAPH']
-        if math.isnan(voltage):
+        if not math.isnan(voltage):
             display_themed_value(
                 theme_data=gpu_voltage_text_data,
                 value=f'{voltage:.2f}',
-                unit=" v",
+                unit=" V",
                 min_size=4
             )
             display_themed_line_graph(gpu_voltage_line_graph_data, cls.last_values_gpu_voltage)
+        elif gpu_voltage_text_data['SHOW'] or gpu_voltage_line_graph_data['SHOW']:
+            logger.warning("Your GPU voltage is not supported yet")
+            gpu_voltage_text_data['SHOW'] = False
+            gpu_voltage_line_graph_data['SHOW'] = False
 
     @staticmethod
     def is_available():
