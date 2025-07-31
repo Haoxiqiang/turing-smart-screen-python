@@ -275,6 +275,7 @@ def last_values_list(size: int) -> List[float]:
 
 
 class CPU:
+    # 类变量用于存储历史数据
     last_values_cpu_percentage = []
     last_values_cpu_temperature = []
     last_values_cpu_fan_speed = []
@@ -284,6 +285,7 @@ class CPU:
 
     @classmethod
     def percentage(cls):
+        """Display CPU percentage usage"""
         theme_data = config.THEME_DATA['STATS']['CPU']['PERCENTAGE']
         cpu_percentage = sensors.Cpu.percentage(
             interval=theme_data.get("INTERVAL", None)
@@ -294,11 +296,15 @@ class CPU:
 
         display_themed_progress_bar(theme_data['GRAPH'], cpu_percentage)
         display_themed_percent_radial_bar(theme_data['RADIAL'], cpu_percentage)
-        display_themed_percent_value(theme_data['TEXT'], cpu_percentage)
+        
+        # Handle multiple TEXT entries for CPU percentage
+        display_multiple_themed_values(theme_data['TEXT'], cpu_percentage, 3, "%")
+        
         display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_cpu_percentage)
 
     @classmethod
     def frequency(cls):
+        """Display CPU frequency"""
         freq_ghz = sensors.Cpu.frequency() / 1000
         theme_data = config.THEME_DATA['STATS']['CPU']['FREQUENCY']
 
@@ -322,6 +328,7 @@ class CPU:
 
     @classmethod
     def load(cls):
+        """Display CPU load averages"""
         cpu_load = sensors.Cpu.load()
         logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
         load_theme_data = config.THEME_DATA['STATS']['CPU']['LOAD']
@@ -332,6 +339,7 @@ class CPU:
 
     @classmethod
     def temperature(cls):
+        """Display CPU temperature"""
         temperature = sensors.Cpu.temperature()
         save_last_value(temperature, cls.last_values_cpu_temperature,
                         config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE",
@@ -359,11 +367,8 @@ class CPU:
 
     @classmethod
     def fan_speed(cls):
-        if CPU_FAN != "AUTO":
-            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
-        else:
-            fan_percent = sensors.Cpu.fan_percent()
-
+        """Display CPU fan speed"""
+        fan_percent = sensors.Cpu.fan_percent(config.THEME_DATA['STATS']['CPU']['FAN_SPEED'].get('FAN_NAME', None))
         save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
                         config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
                                                                                          DEFAULT_HISTORY_SIZE))
@@ -377,10 +382,7 @@ class CPU:
             fan_percent = 0
             if cpu_fan_text_data['SHOW'] or cpu_fan_radial_data['SHOW'] or cpu_fan_graph_data[
                 'SHOW'] or cpu_fan_line_graph_data['SHOW']:
-                if sys.platform == "win32":
-                    logger.warning("Your CPU Fan sensor could not be auto-detected")
-                else:
-                    logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
+                logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
                 cpu_fan_text_data['SHOW'] = False
                 cpu_fan_radial_data['SHOW'] = False
                 cpu_fan_graph_data['SHOW'] = False
@@ -393,6 +395,7 @@ class CPU:
 
     @classmethod
     def power(cls):
+        """Display CPU power consumption"""
         power = sensors.Cpu.power(
             interval=config.THEME_DATA['STATS']['CPU']['POWER'].get("INTERVAL", None)
         )
@@ -432,6 +435,7 @@ class CPU:
 
     @classmethod
     def voltage(cls):
+        """Display CPU voltage"""
         voltage = sensors.Cpu.voltage(
             interval=config.THEME_DATA['STATS']['CPU']['VOLTAGE'].get("INTERVAL", None)
         )
@@ -468,6 +472,20 @@ class CPU:
             min_size=4
         )
         display_themed_line_graph(cpu_voltage_line_graph_data, cls.last_values_cpu_voltage)
+
+    @classmethod
+    def model(cls):
+        """Display CPU model name"""
+        model_name = sensors.Cpu.model()
+        
+        cpu_model_text_data = config.THEME_DATA['STATS']['CPU'].get('MODEL', {}).get('TEXT', {})
+        
+        # Only display if configured to show
+        if cpu_model_text_data.get('SHOW', False):
+            display_themed_value(
+                theme_data=cpu_model_text_data,
+                value=model_name
+            )
 
 
 class Gpu:

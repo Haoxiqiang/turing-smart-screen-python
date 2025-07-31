@@ -24,6 +24,20 @@ from typing import Tuple
 
 import library.sensors.sensors as sensors
 
+# Sample CPU models for random selection
+CPU_MODELS = [
+    "Intel Core i9-13900K @ 3.00GHz",
+    "Intel Core i7-12700K @ 3.60GHz",
+    "Intel Core i5-11600K @ 3.90GHz",
+    "AMD Ryzen 9 7950X @ 4.50GHz",
+    "AMD Ryzen 7 5800X3D @ 3.40GHz",
+    "AMD Ryzen 5 5600G @ 3.90GHz",
+    "Apple M2 Max",
+    "Apple M1 Pro",
+    "Intel Core i9-11900H @ 2.50GHz",
+    "AMD Ryzen 7 6800U @ 2.70GHz"
+]
+
 
 class Cpu(sensors.Cpu):
     @staticmethod
@@ -55,6 +69,11 @@ class Cpu(sensors.Cpu):
     def voltage(interval: float) -> float:
         # Return random voltage between 0.8V and 1.5V
         return random.uniform(0.8, 1.5)
+
+    @staticmethod
+    def model() -> str:
+        # Return a random CPU model from the list
+        return random.choice(CPU_MODELS)
 
 
 class Gpu(sensors.Gpu):

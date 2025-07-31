@@ -23,6 +23,7 @@
 from typing import Tuple
 
 import library.sensors.sensors as sensors
+
 # Define here global static values that will be applied to all sensors of the same type
 PERCENTAGE_SENSOR_VALUE = 50.0
 TEMPERATURE_SENSOR_VALUE = 67.3
@@ -31,6 +32,7 @@ TEMPERATURE_SENSOR_VALUE = 67.3
 CPU_FREQ_MHZ = 2400.0
 CPU_POWER = 65.0
 CPU_VOLTAGE = 1.2
+CPU_MODEL = "Intel Core i7-11700K @ 3.60GHz"
 DISK_TOTAL_SIZE_GB = 1000
 MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
@@ -69,6 +71,10 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def voltage(interval: float) -> float:
         return CPU_VOLTAGE
+
+    @staticmethod
+    def model() -> str:
+        return CPU_MODEL
 
 
 class Gpu(sensors.Gpu):

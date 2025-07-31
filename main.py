@@ -231,6 +231,7 @@ if __name__ == "__main__":
     scheduler.CPUPower(); time.sleep(0.25)
     scheduler.CPUVoltage(); time.sleep(0.25)
     scheduler.CPUFanSpeed(); time.sleep(0.25)
+    scheduler.CPUModel(); time.sleep(0.25)  # Add CPU model display
     if stats.Gpu.is_available():
         scheduler.GpuStats(); time.sleep(0.25)
     scheduler.MemoryStats(); time.sleep(0.25)

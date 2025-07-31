@@ -175,12 +175,15 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
-        for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith(
-                    "CPU Total") and sensor.Value is not None:
-                return float(sensor.Value)
+        try:
+            for sensor in cpu.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith(
+                        "CPU Total") and sensor.Value is not None:
+                    return float(sensor.Value)
+        except:
+            pass
 
-        logger.error("CPU load cannot be read")
+        # Failed to get CPU load
         return math.nan
 
     @staticmethod
@@ -253,6 +256,83 @@ class Cpu(sensors.Cpu):
 
         # No Fan Speed sensor for this CPU model
         return math.nan
+
+    @staticmethod
+    def power(interval: float) -> float:
+        cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
+        try:
+            # Try to get CPU package power
+            for sensor in cpu.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Power and str(sensor.Name).startswith(
+                        "CPU Package") and sensor.Value is not None:
+                    return float(sensor.Value)
+                    
+            # If not available, try to get CPU cores power
+            for sensor in cpu.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Power and str(sensor.Name).startswith(
+                        "CPU Cores") and sensor.Value is not None:
+                    return float(sensor.Value)
+        except:
+            pass
+
+        # No power sensor for this CPU model
+        return math.nan
+
+    @staticmethod
+    def voltage(interval: float) -> float:
+        cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
+        try:
+            # Try to get CPU voltage
+            for sensor in cpu.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Voltage and str(sensor.Name).startswith(
+                        "CPU VCore") and sensor.Value is not None:
+                    return float(sensor.Value)
+        except:
+            pass
+
+        # No voltage sensor for this CPU model
+        return math.nan
+
+    @staticmethod
+    def model() -> str:
+        try:
+            # Try to get CPU model from LibreHardwareMonitor
+            cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
+            if cpu and cpu.Name:
+                return str(cpu.Name)
+        except:
+            pass
+
+        # Fallback to Python method if LibreHardwareMonitor method fails
+        try:
+            import platform
+            # On Linux, try to get CPU model from /proc/cpuinfo
+            if platform.system() == "Linux":
+                with open('/proc/cpuinfo', 'r') as f:
+                    for line in f:
+                        if line.startswith('model name'):
+                            return line.split(':')[1].strip()
+            
+            # On Windows, try to get CPU model from wmic
+            if platform.system() == "Windows":
+                import subprocess
+                result = subprocess.run(["wmic", "cpu", "get", "name"], capture_output=True, text=True)
+                if result.returncode == 0:
+                    lines = result.stdout.strip().split('\n')
+                    if len(lines) > 1:
+                        return lines[1].strip()
+                        
+            # On macOS, try to get CPU model from sysctl
+            if platform.system() == "Darwin":
+                import subprocess
+                result = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True)
+                if result.returncode == 0:
+                    return result.stdout.strip()
+        except:
+            pass
+
+        # If we can't get CPU model, return a default string
+        return "Unknown CPU Model"
 
 
 class Gpu(sensors.Gpu):

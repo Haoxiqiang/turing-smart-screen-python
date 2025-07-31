@@ -144,6 +144,13 @@ def CPUFanSpeed():
     stats.CPU.fan_speed()
 
 
+@async_job("CPU_Model")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS']['CPU'].get('MODEL', {}).get("INTERVAL", 0)).total_seconds())
+def CPUModel():
+    # logger.debug("Refresh CPU Model")
+    stats.CPU.model()
+
+
 @async_job("GPU_Stats")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('GPU', {}).get("INTERVAL", 0)).total_seconds())
 def GpuStats():

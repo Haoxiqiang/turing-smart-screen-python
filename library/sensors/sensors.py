@@ -59,6 +59,16 @@ class Cpu(ABC):
     def voltage(interval: float) -> float:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def model() -> str:
+        """
+        Get the CPU model name
+        :return: CPU model name as string
+        """
+        pass
+
+
 class Gpu(ABC):
     @staticmethod
     @abstractmethod

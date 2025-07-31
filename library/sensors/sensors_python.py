@@ -281,6 +281,90 @@ class Cpu(sensors.Cpu):
         except:
             return math.nan
 
+    @staticmethod
+    def model() -> str:
+        try:
+            # Try to get CPU model from psutil
+            cpu_info = psutil.cpu_info() if hasattr(psutil, 'cpu_info') else None
+            if cpu_info and 'brand' in cpu_info:
+                return cpu_info['brand']
+        except:
+            pass
+            
+        try:
+            # On Linux, try to get CPU model from /proc/cpuinfo
+            if platform.system() == "Linux":
+                with open('/proc/cpuinfo', 'r') as f:
+                    # Look for the model name in /proc/cpuinfo
+                    for line in f:
+                        if line.startswith('model name'):
+                            # Extract the model name after the colon
+                            model_name = line.split(':', 1)[1].strip()
+                            if model_name:
+                                return model_name
+                    
+                    # If model name is not found, try to construct it from other fields
+                    # This is useful for some ARM processors
+                    f.seek(0)  # Reset file pointer to beginning
+                    vendor_id = None
+                    model = None
+                    stepping = None
+                    cpu_part = None
+                    
+                    for line in f:
+                        if line.startswith('vendor_id'):
+                            vendor_id = line.split(':', 1)[1].strip()
+                        elif line.startswith('model'):
+                            model = line.split(':', 1)[1].strip()
+                        elif line.startswith('stepping'):
+                            stepping = line.split(':', 1)[1].strip()
+                        elif line.startswith('CPU part'):
+                            cpu_part = line.split(':', 1)[1].strip()
+                    
+                    # Construct a model name if we have the information
+                    if vendor_id and model and stepping:
+                        return f"{vendor_id} Model {model} Stepping {stepping}"
+                    elif cpu_part:
+                        return f"ARM CPU Part {cpu_part}"
+        except:
+            pass
+            
+        try:
+            # On Windows, try to get CPU model from wmic
+            if platform.system() == "Windows":
+                import subprocess
+                result = subprocess.run(["wmic", "cpu", "get", "name"], capture_output=True, text=True)
+                if result.returncode == 0:
+                    lines = result.stdout.strip().split('\n')
+                    # Find the first non-empty line that is not the header
+                    for line in lines:
+                        if line.strip() and line.strip().lower() != 'name':
+                            return line.strip()
+        except:
+            pass
+            
+        try:
+            # On macOS, try to get CPU model from sysctl
+            if platform.system() == "Darwin":
+                import subprocess
+                result = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True)
+                if result.returncode == 0:
+                    return result.stdout.strip()
+        except:
+            pass
+        
+        try:
+            # Alternative method using platform module
+            import platform
+            model = platform.processor()
+            if model:
+                return model
+        except:
+            pass
+
+        # If we can't get CPU model, return a default string
+        return "Unknown CPU Model"
+
 
 class Gpu(sensors.Gpu):
     @staticmethod
