@@ -58,6 +58,12 @@ class GpuType(IntEnum):
 DETECTED_GPU = GpuType.UNSUPPORTED
 
 
+def is_cpu_fan(label: str) -> bool:
+    # Improved CPU fan detection including common patterns
+    cpu_fan_keywords = ["cpu", "proc", "processor", "core"]
+    return any(keyword in label.lower() for keyword in cpu_fan_keywords)
+
+
 # Function inspired of psutil/psutil/_pslinux.py:sensors_fans()
 # Adapted to also get fan speed percentage instead of raw value
 def sensors_fans():
@@ -73,39 +79,70 @@ def sensors_fans():
     from psutil._common import bcat, cat
     import collections, glob, os
 
-    ret = collections.defaultdict(list)
-    basenames = glob.glob('/sys/class/hwmon/hwmon*/fan*_*')
-    if not basenames:
-        # CentOS has an intermediate /device directory:
-        # https://github.com/giampaolo/psutil/issues/971
-        basenames = glob.glob('/sys/class/hwmon/hwmon*/device/fan*_*')
+    FanEntry = collections.namedtuple('FanEntry', ['label', 'current', 'min', 'max', 'percent'])
+    fans = collections.OrderedDict()
 
-    basenames = sorted(set([x.split('_')[0] for x in basenames]))
-    for base in basenames:
+    for hwmon_dir in glob.glob('/sys/class/hwmon/hwmon*/'):
         try:
-            current_rpm = int(bcat(base + '_input'))
-            try:
-                max_rpm = int(bcat(base + '_max'))
-            except:
-                max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
-            try:
-                min_rpm = int(bcat(base + '_min'))
-            except:
-                min_rpm = 0  # Approximated: min fan speed is 0 RPM
-            percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
-        except (IOError, OSError) as err:
+            name = cat(os.path.join(hwmon_dir, 'name')).strip()
+        except (IOError, OSError):
+            # Name file may not exist, skip the entry
             continue
-        unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
-        label = cat(base + '_label', fallback=os.path.basename(base)).strip()
 
-        custom_sfan = namedtuple('sfan', ['label', 'current', 'percent'])
-        ret[unit_name].append(custom_sfan(label, current_rpm, percent))
+        fan_entries = []
+        for fan_input in glob.glob(os.path.join(hwmon_dir, 'fan*_input')):
+            fan_label = None
+            fan_min = None
+            fan_max = None
+            fan_percent = None
+            
+            # Get the fan number from the input file name
+            fan_number = fan_input.split('fan')[-1].split('_')[0]
+            
+            # Try to get the label
+            try:
+                fan_label_file = os.path.join(hwmon_dir, f'fan{fan_number}_label')
+                if os.path.isfile(fan_label_file):
+                    fan_label = cat(fan_label_file).strip()
+            except (IOError, OSError):
+                pass
 
-    return dict(ret)
+            # Try to get the minimum speed
+            try:
+                fan_min_file = os.path.join(hwmon_dir, f'fan{fan_number}_min')
+                if os.path.isfile(fan_min_file):
+                    fan_min = int(cat(fan_min_file).strip())
+            except (IOError, OSError, ValueError):
+                pass
 
+            # Try to get the maximum speed
+            try:
+                fan_max_file = os.path.join(hwmon_dir, f'fan{fan_number}_max')
+                if os.path.isfile(fan_max_file):
+                    fan_max = int(cat(fan_max_file).strip())
+            except (IOError, OSError, ValueError):
+                pass
 
-def is_cpu_fan(label: str) -> bool:
-    return ("cpu" in label.lower()) or ("proc" in label.lower())
+            # Get the current speed
+            try:
+                fan_current = int(cat(fan_input).strip())
+                
+                # Calculate percentage if we have min and max values
+                if fan_min is not None and fan_max is not None and fan_max != fan_min:
+                    fan_percent = min(100.0, max(0.0, ((fan_current - fan_min) / (fan_max - fan_min)) * 100))
+                else:
+                    # If we don't have min/max, use a default range (0-3000 RPM)
+                    fan_percent = min(100.0, max(0.0, (fan_current / 3000.0) * 100))
+                
+                fan_entry = FanEntry(label=fan_label or '', current=fan_current, min=fan_min, max=fan_max, percent=fan_percent)
+                fan_entries.append(fan_entry)
+            except (IOError, OSError, ValueError):
+                continue
+
+        if fan_entries:
+            fans[name] = fan_entries
+
+    return fans
 
 
 class Cpu(sensors.Cpu):
@@ -165,7 +202,11 @@ class Cpu(sensors.Cpu):
                             # Manually selected fan
                             return entry.percent
                         elif is_cpu_fan(entry.label) or is_cpu_fan(name):
-                            # Auto-detected fan
+                            # Auto-detected CPU fan based on label or name
+                            return entry.percent
+                        elif name == "amdgpu" and entry.label == "":
+                            # Special case for AMD GPU - often the main fan is the CPU fan
+                            # This is a heuristic that works for many systems
                             return entry.percent
         except:
             pass

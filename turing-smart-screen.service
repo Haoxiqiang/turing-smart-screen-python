@@ -1,0 +1,14 @@
+[Unit]
+Description=Turing Smart Screen Python System Monitor
+After=multi-user.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/haoxiqiang/workspace/turing-smart-screen-python
+ExecStart=/home/haoxiqiang/workspace/turing-smart-screen-python/venv3/bin/python3 /home/haoxiqiang/workspace/turing-smart-screen-python/main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

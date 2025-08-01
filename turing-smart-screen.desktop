@@ -1,0 +1,9 @@
+`[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Turing Smart Screen Python
+Comment=System monitor for Turing Smart Screen
+Exec=/home/haoxiqiang/workspace/turing-smart-screen-python/run_background.sh
+Icon=/home/haoxiqiang/workspace/turing-smart-screen-python/res/icons/monitor-icon-17865/64.png
+Terminal=false
+Categories=System;Monitor;

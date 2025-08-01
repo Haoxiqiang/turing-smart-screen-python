@@ -298,7 +298,18 @@ class CPU:
         display_themed_percent_radial_bar(theme_data['RADIAL'], cpu_percentage)
         
         # Handle multiple TEXT entries for CPU percentage
-        display_multiple_themed_values(theme_data['TEXT'], cpu_percentage, 3, "%")
+        if 'TEXT' in theme_data:
+            cpu_percent_text_data = theme_data['TEXT']
+            # Check if it's a list of text configurations or a single one
+            if isinstance(cpu_percent_text_data, list):
+                # Multiple text configurations
+                for text_config in cpu_percent_text_data:
+                    if text_config.get("SHOW", False):
+                        display_themed_percent_value(text_config, cpu_percentage)
+            else:
+                # Single text configuration
+                if cpu_percent_text_data.get("SHOW", False):
+                    display_themed_percent_value(cpu_percent_text_data, cpu_percentage)
         
         display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_cpu_percentage)
 

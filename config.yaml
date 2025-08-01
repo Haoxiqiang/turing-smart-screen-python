@@ -31,7 +31,7 @@ config:
   # If value is AUTO the system monitor will try to auto-select the CPU fan
   # If auto-detection fails, it might be necessary to manually indicate which fan is the CPU fan
   # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
-  CPU_FAN: amdgpu/fan1
+  CPU_FAN: AUTO
 
   # Address used for ping sensor. Can be internal/external IP (e.g. 8.8.8.8 or 192.168.0.1) or hostname (google.com)
   PING: 8.8.8.8
