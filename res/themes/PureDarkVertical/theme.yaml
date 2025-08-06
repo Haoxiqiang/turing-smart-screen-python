@@ -69,18 +69,6 @@ STATS:
         FONT_SIZE: 36
         FONT_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
-      # TEXT:
-      #   SHOW: True
-      #   SHOW_UNIT: True
-      #   X: 96
-      #   Y: 1845
-      #   WIDTH: 60
-      #   HEIGHT: 20
-      #   ANCHOR: mm
-      #   FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-      #   FONT_SIZE: 12
-      #   FONT_COLOR: 0, 0, 0
-      #   BACKGROUND_IMAGE: background.png
       LINE_GRAPH:
         SHOW: True
         X: 200
@@ -92,7 +80,7 @@ STATS:
         HISTORY_SIZE: 16
         AUTOSCALE: True
         LINE_COLOR: 255, 55, 80
-        LINE_WIDTH: 2
+        LINE_WIDTH: 4
         AXIS: FALSE
         BACKGROUND_COLOR: 255, 255, 255
     FREQUENCY:
@@ -160,30 +148,43 @@ STATS:
         FONT_SIZE: 40
         FONT_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 150
+        WIDTH: 1
+        HEIGHT: 1
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: True
+        X: 32
+        Y: 1175
+        WIDTH: 400
+        HEIGHT: 60
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        LINE_COLOR: 255, 55, 80
+        LINE_WIDTH: 4
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       TEXT:
-        - SHOW: True
-          SHOW_UNIT: True
-          X: 14
-          Y: 1010
-          WIDTH: 120
-          HEIGHT: 44
-          ANCHOR: mm
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 40
-          FONT_COLOR: 0, 0, 0
-          BACKGROUND_IMAGE: background.png
-        - SHOW: True
-          SHOW_UNIT: True
-          X: 265
-          Y: 1845
-          WIDTH: 60
-          HEIGHT: 20
-          ANCHOR: mm
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 12
-          FONT_COLOR: 0, 0, 0
-          BACKGROUND_IMAGE: background.png
+        SHOW: True
+        SHOW_UNIT: True
+        X: 14
+        Y: 1010
+        WIDTH: 120
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       GRAPH:
         SHOW: False
       RADIAL:
@@ -387,3 +388,20 @@ STATS:
           BACKGROUND_IMAGE: background.png
           ALIGN: left  # left / center / right
           ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+  WEATHER:
+    INTERVAL: 3600
+    TEMPERATURE:
+      TEXT:
+        - SHOW: False
+    TEMPERATURE_FELT:
+      TEXT:
+        SHOW: False
+    UPDATE_TIME:
+      TEXT:
+        SHOW: False
+    HUMIDITY:
+      TEXT:
+        SHOW: False
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: False
